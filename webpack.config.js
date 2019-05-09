@@ -1,13 +1,21 @@
 const path = require("path");
 const { VueLoaderPlugin } = require('vue-loader')
 const vueLoaderConfig = require('./vue-loader.config')
+// 自动生成 HTML 文件 并将 js 文件自动引入
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+// 打包前 删除dist目录下所有内容
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
   mode: "development", // 模式 development | production
-  entry: "./src/index.js", // 需要打包的文件
+  entry: {
+    main: "./src/index.js",
+    sub: "./src/index.js"
+  }, // 需要打包的文件
   output: {
-    filename: "bundle.js", //打包后的 js 文件
+    filename: "[name].js", // 打包后的 js 文件,打包多个文件可用[name]占位符
     path: path.resolve(__dirname, "dist") // 打包后的文件夹
+    // publicPath: 'http:cdn.com.cn' // 公共地址，多用于后台或需要网络获取的地址前缀
   },
   module: {
     // 模块配置项
@@ -15,7 +23,7 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        options: vueLoaderConfig
+        options: vueLoaderConfig // 配置 vue-loader 来识别 .vue 文件
       },
       {
         test: /\.(gif|png|jpg)$/, // 正则
@@ -66,5 +74,8 @@ module.exports = {
       }
     ]
   },
-  plugins: [new VueLoaderPlugin()]
+  // plugins类似生命周期，在特定的时刻做特定的事
+  plugins: [new VueLoaderPlugin(),new HtmlWebpackPlugin({
+    template: 'src/index.html'
+  }),new CleanWebpackPlugin()]
 };
