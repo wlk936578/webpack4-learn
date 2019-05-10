@@ -8,13 +8,24 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
   mode: "development", // 模式 development | production
+  devtool: 'cheap-module-eval-source-map', // development模式
+  // devtool: 'cheap-module-source-map', // production 模式
   entry: {
     main: "./src/index.js",
     sub: "./src/index.js"
   }, // 需要打包的文件
+  devServer: { // webpack-dev-server 可用于强制刷新(热更新)，并自动监听代码变化并刷新页面，非 file 格式 发送 ajax 请求
+    contentBase: './dist', // 打包后的目录
+    open: true, // 自动打开浏览器
+    // port: '8082', // 端口设置
+    proxy: { // 可进行接口代理，模拟接口请求
+      '/api': 'http://localhost:3000' 
+    }
+  },
   output: {
     filename: "[name].js", // 打包后的 js 文件,打包多个文件可用[name]占位符
-    path: path.resolve(__dirname, "dist") // 打包后的文件夹
+    path: path.resolve(__dirname, "dist"), // 打包后的文件夹
+    publicPath: '/'
     // publicPath: 'http:cdn.com.cn' // 公共地址，多用于后台或需要网络获取的地址前缀
   },
   module: {
